@@ -7,6 +7,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import TasksPage from './pages/Tasks';
 import UsersPage from './pages/Users';
+import BudgetsPage from './pages/Budgets';
 
 // Private route component
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -38,7 +39,7 @@ const AppRoutes: React.FC = () => {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/tasks" element={<TasksPage />} />
                   <Route path="/users" element={<UsersPage />} />
-                  <Route path="/budgets" element={<div>Presupuestos (Próximamente)</div>} />
+                  <Route path="/budgets" element={<BudgetsPage />} />
                   <Route path="/photos" element={<div>Fotos (Próximamente)</div>} />
                 </Routes>
               </Layout>
