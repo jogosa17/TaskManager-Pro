@@ -9,13 +9,50 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login, error } = useAuth();
 
+  // Debug: mostrar error en consola
+  React.useEffect(() => {
+    if (error) {
+      console.log('Error desde AuthContext:', error);
+    }
+  }, [error]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Formulario enviado');
+    
+    if (!username || !password) {
+      console.log('Campos vacíos:', { username, password: password ? '***' : null });
+      return;
+    }
+    
     setIsLoading(true);
+    
+    console.log('Iniciando login con:', { username, password: '***' });
+    
     try {
-      await login(username, password);
+      // Llamada directa al API sin AuthContext
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      
+      const data = await response.json();
+      console.log('Respuesta directa API:', data);
+      
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        console.log('Login exitoso, redirigiendo...');
+        window.location.href = '/dashboard';
+      } else {
+        console.error('Error en login:', data.error);
+      }
+      
     } catch (error: any) {
-      // El error ya se maneja en el contexto
+      console.error('Error completo:', error);
     } finally {
       setIsLoading(false);
     }

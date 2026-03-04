@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:3001/api';
 
 // Crear instancia de axios
 const api = axios.create({
@@ -102,20 +102,31 @@ export interface BudgetItem {
 export interface Photo {
   id: number;
   url: string;
+  filename?: string;
   task_id?: number;
+  task_title?: string;
   budget_id?: number;
   description?: string;
   uploaded_by: number;
   uploaded_name?: string;
-  file_size: number;
+  file_size?: number;
   created_at: string;
 }
 
 // Servicios de autenticación
 export const authService = {
   login: async (username: string, password: string): Promise<AuthResponse> => {
-    const response = await api.post('/auth/login', { username, password });
-    return response.data;
+    try {
+      console.log('Intentando login API:', { username, password: '***' });
+      const response = await api.post('/auth/login', { username, password });
+      console.log('Respuesta API login:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error en authService.login:', error);
+      console.error('Error response:', error.response);
+      console.error('Error message:', error.message);
+      throw error;
+    }
   },
   
   getCurrentUser: async (): Promise<User> => {
@@ -270,6 +281,7 @@ export const photoService = {
     task_id?: number;
     budget_id?: number;
     uploaded_by?: number;
+    date?: string;
     limit?: number;
     offset?: number;
   }): Promise<Photo[]> => {

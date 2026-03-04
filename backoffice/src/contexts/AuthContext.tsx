@@ -97,17 +97,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem('token');
-      if (token) {
+      const user = localStorage.getItem('user');
+      
+      if (token && user) {
         try {
-          dispatch({ type: 'SET_LOADING', payload: true });
-          const user = await authService.getCurrentUser();
-          dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+          // Para modo estático, confiar en los datos guardados
+          const userData = JSON.parse(user);
+          dispatch({ type: 'LOGIN_SUCCESS', payload: { user: userData, token } });
         } catch (error) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           dispatch({ type: 'LOGIN_FAILURE' });
-        } finally {
-          dispatch({ type: 'SET_LOADING', payload: false });
         }
       }
     };
@@ -128,7 +128,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         payload: { user: response.user, token: response.token },
       });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || 'Error al iniciar sesión';
+      console.error('Login error:', error);
+      const errorMessage = error.response?.data?.error || error.message || 'Error al iniciar sesión';
       dispatch({ type: 'LOGIN_FAILURE' });
       throw new Error(errorMessage);
     }
